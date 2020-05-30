@@ -1,5 +1,7 @@
 package todo.model;
 
 public enum Status {
-    TODO, IN_PROGRESS, FINISHED
+    TODO,
+    IN_PROGRESS,
+    FINISHED
 }

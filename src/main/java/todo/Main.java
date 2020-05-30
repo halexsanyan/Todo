@@ -6,17 +6,13 @@ import todo.model.Status;
 import todo.model.Todo;
 import todo.model.User;
 
-
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main implements Commands {
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final DataManager DATA_MANAGER = new DataManager();
-    private static SimpleDateFormat sdf = new SimpleDateFormat("dd-hh-yyyy hh:mm:ss");
     private static User currentUser = null;
 
     public static void main(String[] args) {
@@ -123,6 +119,11 @@ public class Main implements Commands {
         }
     }
 
+    private static void printMyList() {
+        DATA_MANAGER.printTodoByUserId(currentUser.getId());
+    }
+
+
     private static void printMyProgresList() {
         try {
             DATA_MANAGER.getProgresList(currentUser.getId());
@@ -138,37 +139,6 @@ public class Main implements Commands {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
-    }
-
-    private static void deleteTodoByID() {
-        try {
-            DATA_MANAGER.printTodoByUserId(currentUser.getId());
-            System.out.println("Please input: id ");
-            String todoDataStr = SCANNER.nextLine();
-            DATA_MANAGER.deletTodoById(Integer.parseInt(todoDataStr));
-            System.out.println("todo successfully deleted!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void changeTodoStatus() {
-        try {
-            DATA_MANAGER.printTodoByUserId(currentUser.getId());
-            System.out.println("Please input: id, status " + Arrays.toString(Status.values()));
-            String todoDataStr = SCANNER.nextLine();
-            String[] todoData = todoDataStr.split(",");
-            DATA_MANAGER.cangeTodos(Integer.parseInt(todoData[0]), Status.valueOf(todoData[1]));
-            System.out.println("change completed successfully!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void printMyList() {
-        DATA_MANAGER.printTodoByUserId(currentUser.getId());
     }
 
     private static void addTodo() {
@@ -184,5 +154,34 @@ public class Main implements Commands {
             System.out.println("Wrong input");
         }
     }
+
+
+    private static void changeTodoStatus() {
+        try {
+            DATA_MANAGER.printTodoByUserId(currentUser.getId());
+            System.out.println("Please input: id, status " + Arrays.toString(Status.values()));
+            String todoDataStr = SCANNER.nextLine();
+            String[] todoData = todoDataStr.split(",");
+            DATA_MANAGER.cangeTodos(Integer.parseInt(todoData[0]), Status.valueOf(todoData[1]));
+            System.out.println("change completed successfully!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void deleteTodoByID() {
+        try {
+            DATA_MANAGER.printTodoByUserId(currentUser.getId());
+            System.out.println("Please input: id ");
+            String todoDataStr = SCANNER.nextLine();
+            DATA_MANAGER.deletTodoById(Integer.parseInt(todoDataStr));
+            System.out.println("todo successfully deleted!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
 

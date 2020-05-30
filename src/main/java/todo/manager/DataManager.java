@@ -2,15 +2,12 @@ package todo.manager;
 
 
 import todo.db.DBConnectionProvider;
-
 import todo.model.Status;
 import todo.model.Todo;
 import todo.model.User;
 
 import java.sql.*;
-
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,7 +85,6 @@ public class DataManager {
     }
 
     public User getUser(String email) throws SQLException {
-
         for (User user : getUsers()) {
             if (user.getEmail().equals(email)) {
                 return user;
@@ -109,20 +105,6 @@ public class DataManager {
         }
     }
 
-    public void deletTodoById(int id) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM todo WHERE id=?");
-        preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
-    }
-
-    public void cangeTodos(int id, Status status) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE todo SET status=? WHERE id=?");
-        preparedStatement.setString(1, status.name());
-        preparedStatement.setInt(2, id);
-
-        preparedStatement.executeUpdate();
-    }
-
     public void getProgresList(int id) throws SQLException {
         for (Todo todo : getAllTodo()) {
             if (todo.getUserID() == id && todo.getStatus() == Status.IN_PROGRESS) {
@@ -137,5 +119,19 @@ public class DataManager {
                 System.out.println(todo);
             }
         }
+    }
+
+    public void deletTodoById(int id) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM todo WHERE id=?");
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+    }
+
+    public void cangeTodos(int id, Status status) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE todo SET status=? WHERE id=?");
+        preparedStatement.setString(1, status.name());
+        preparedStatement.setInt(2, id);
+
+        preparedStatement.executeUpdate();
     }
 }
