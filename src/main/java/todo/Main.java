@@ -1,7 +1,8 @@
 package todo;
 
 import todo.commands.Commands;
-import todo.manager.DataManager;
+import todo.manager.UserManager;
+import todo.manager.TodoManager;
 import todo.model.Status;
 import todo.model.Todo;
 import todo.model.User;
@@ -12,7 +13,8 @@ import java.util.Scanner;
 
 public class Main implements Commands {
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final DataManager DATA_MANAGER = new DataManager();
+    private static final UserManager USER_MANAGER = new UserManager();
+    private static final TodoManager TODO_MANAGER = new TodoManager();
     private static User currentUser = null;
 
     public static void main(String[] args) {
@@ -48,10 +50,10 @@ public class Main implements Commands {
         try {
             String userDataStr = SCANNER.nextLine();
             String[] userData = userDataStr.split(",");
-            User userFromManager = DATA_MANAGER.getUser(userData[2]);
+            User userFromManager = USER_MANAGER.getUser(userData[2]);
             if (userFromManager == null) {
                 User user = new User(userData[0], userData[1], userData[2], userData[3]);
-                DATA_MANAGER.addUser(user);
+                USER_MANAGER.addUser(user);
                 System.out.println("User was successfully added!");
             } else {
                 System.out.println("User already exists!");
@@ -66,7 +68,7 @@ public class Main implements Commands {
         String userDataStr = SCANNER.nextLine();
         try {
             String[] userData = userDataStr.split(",");
-            User user = DATA_MANAGER.getUser(userData[0]);
+            User user = USER_MANAGER.getUser(userData[0]);
             if (user != null && user.getPassword().equals(userData[1])) {
                 currentUser = user;
                 loginSuccess();
@@ -120,13 +122,13 @@ public class Main implements Commands {
     }
 
     private static void printMyList() {
-        DATA_MANAGER.printTodoByUserId(currentUser.getId());
+        TODO_MANAGER.printTodoByUserId(currentUser.getId());
     }
 
 
     private static void printMyProgresList() {
         try {
-            DATA_MANAGER.getProgresList(currentUser.getId());
+            TODO_MANAGER.getProgresList(currentUser.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,7 +137,7 @@ public class Main implements Commands {
     private static void printMyFinishedList() {
 
         try {
-            DATA_MANAGER.getFinishedList(currentUser.getId());
+            TODO_MANAGER.getFinishedList(currentUser.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -148,7 +150,7 @@ public class Main implements Commands {
             String[] todoData = todoDataStr.split(",");
             Todo todo = new Todo(todoData[0], todoData[1],
                     Status.TODO, currentUser.getId());
-            DATA_MANAGER.addTodo(todo);
+            TODO_MANAGER.addTodo(todo);
             System.out.println("Todo was successfully added!");
         } catch (Exception e) {
             System.out.println("Wrong input");
@@ -158,23 +160,24 @@ public class Main implements Commands {
 
     private static void changeTodoStatus() {
         try {
-            DATA_MANAGER.printTodoByUserId(currentUser.getId());
+            TODO_MANAGER.printTodoByUserId(currentUser.getId());
             System.out.println("Please input: id, status " + Arrays.toString(Status.values()));
             String todoDataStr = SCANNER.nextLine();
             String[] todoData = todoDataStr.split(",");
-            DATA_MANAGER.cangeTodos(Integer.parseInt(todoData[0]), Status.valueOf(todoData[1]));
+            TODO_MANAGER.cangeTodos(Integer.parseInt(todoData[0]), Status.valueOf(todoData[1].toUpperCase()));
             System.out.println("change completed successfully!");
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Try again");
+            changeTodoStatus();
         }
     }
 
     private static void deleteTodoByID() {
         try {
-            DATA_MANAGER.printTodoByUserId(currentUser.getId());
+            TODO_MANAGER.printTodoByUserId(currentUser.getId());
             System.out.println("Please input: id ");
             String todoDataStr = SCANNER.nextLine();
-            DATA_MANAGER.deletTodoById(Integer.parseInt(todoDataStr));
+            TODO_MANAGER.deletTodoById(Integer.parseInt(todoDataStr));
             System.out.println("todo successfully deleted!");
         } catch (SQLException e) {
             e.printStackTrace();

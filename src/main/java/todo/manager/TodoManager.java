@@ -1,37 +1,19 @@
 package todo.manager;
 
-
 import todo.db.DBConnectionProvider;
 import todo.model.Status;
 import todo.model.Todo;
-import todo.model.User;
 
 import java.sql.*;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DataManager {
+public class TodoManager {
     private Connection connection;
 
-    public DataManager() {
+    public TodoManager() {
         connection = DBConnectionProvider.getInstance().getConnection();
-    }
-
-    public void addUser(User user) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("Insert into user(name, surname, email, password) Values (?,?,?,?)",
-                Statement.RETURN_GENERATED_KEYS);
-        preparedStatement.setString(1, user.getName());
-        preparedStatement.setString(2, user.getSurname());
-        preparedStatement.setString(3, user.getEmail());
-        preparedStatement.setString(4, user.getPassword());
-        preparedStatement.executeUpdate();
-
-        ResultSet resultSet = preparedStatement.getGeneratedKeys();
-        if (resultSet.next()) {
-            int id = resultSet.getInt(1);
-            user.setId(id);
-        }
     }
 
     public void addTodo(Todo todo) throws SQLException, ParseException {
@@ -51,7 +33,7 @@ public class DataManager {
         }
     }
 
-    public List<Todo> getAllTodo() throws SQLException {
+    public List<Todo> getAllTodos() throws SQLException {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM todo");
         List<Todo> myList = new LinkedList<Todo>();
@@ -60,7 +42,7 @@ public class DataManager {
             todo.setId(resultSet.getInt("id"));
             todo.setName(resultSet.getString("name"));
             todo.setCreatedDate(resultSet.getTimestamp("created_date"));
-            todo.setDeadline(resultSet.getString("deadline"));
+            todo.setDeadline(resultSet.getTimestamp("deadline").toString());
             todo.setStatus(Status.valueOf(resultSet.getString("status")));
             todo.setUserID(resultSet.getInt("user_id"));
             myList.add(todo);
@@ -68,34 +50,9 @@ public class DataManager {
         return myList;
     }
 
-    public List<User> getUsers() throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM user");
-        List<User> users = new LinkedList<User>();
-        while (resultSet.next()) {
-            User user = new User();
-            user.setId(resultSet.getInt("id"));
-            user.setName(resultSet.getString("name"));
-            user.setSurname(resultSet.getString("surname"));
-            user.setEmail(resultSet.getString("email"));
-            user.setPassword(resultSet.getString("password"));
-            users.add(user);
-        }
-        return users;
-    }
-
-    public User getUser(String email) throws SQLException {
-        for (User user : getUsers()) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
     public void printTodoByUserId(int id) {
         try {
-            for (Todo todo : getAllTodo()) {
+            for (Todo todo : getAllTodos()) {
                 if (todo.getUserID() == id) {
                     System.out.println(todo);
                 }
@@ -104,9 +61,8 @@ public class DataManager {
             e.printStackTrace();
         }
     }
-
     public void getProgresList(int id) throws SQLException {
-        for (Todo todo : getAllTodo()) {
+        for (Todo todo : getAllTodos()) {
             if (todo.getUserID() == id && todo.getStatus() == Status.IN_PROGRESS) {
                 System.out.println(todo);
             }
@@ -114,7 +70,7 @@ public class DataManager {
     }
 
     public void getFinishedList(int id) throws SQLException {
-        for (Todo todo : getAllTodo()) {
+        for (Todo todo : getAllTodos()) {
             if (todo.getUserID() == id && todo.getStatus() == Status.FINISHED) {
                 System.out.println(todo);
             }
