@@ -61,6 +61,7 @@ public class TodoManager {
             e.printStackTrace();
         }
     }
+
     public void getProgresList(int id) throws SQLException {
         for (Todo todo : getAllTodos()) {
             if (todo.getUserID() == id && todo.getStatus() == Status.IN_PROGRESS) {

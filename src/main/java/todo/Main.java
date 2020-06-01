@@ -135,7 +135,6 @@ public class Main implements Commands {
     }
 
     private static void printMyFinishedList() {
-
         try {
             TODO_MANAGER.getFinishedList(currentUser.getId());
         } catch (SQLException e) {
@@ -183,7 +182,6 @@ public class Main implements Commands {
             e.printStackTrace();
         }
     }
-
 
 
 }
